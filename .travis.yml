@@ -4,7 +4,7 @@ sudo: false
 
 cache:
   directory:
-    - $HOME/.composer/cache
+    - $HOME/.composer
 
 php:
   - 7.0
@@ -14,7 +14,7 @@ install:
   - composer install --prefer-dist
 
 script:
-  - vendor/bin/phpunit
+  - vendor/bin/phpunit --coverage-text
   - vendor/bin/php-cs-fixer --diff --dry-run --verbose fix
 
 notifications:
