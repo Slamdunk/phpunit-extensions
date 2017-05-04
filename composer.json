@@ -1,0 +1,30 @@
+{
+    "name": "slam/phpunit-extensions",
+    "description": "Slam extensions for phpunit/phpunit",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Filippo Tessarotto",
+            "email": "zoeslam@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.0",
+        "phpunit/phpunit": "^6.1"
+    },
+    "require-dev": {
+        "slam/php-cs-fixer-extensions": "^1.0",
+        "slam/php-debug-r": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Slam\\PHPUnit\\": "lib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Slam\\PHPUnit\\Tests\\": "tests/"
+        }
+    }
+}
