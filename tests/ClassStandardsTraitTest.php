@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Slam\PHPUnit\Tests;
 
+use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestCase;
 use Slam\PHPUnit\ClassStandardsTrait;
-use PHPUnit\Framework\AssertionFailedError;
 
-class ClassStandardsTraitTest extends TestCase
+final class ClassStandardsTraitTest extends TestCase
 {
     use ClassStandardsTrait;
 
@@ -29,7 +31,7 @@ class ClassStandardsTraitTest extends TestCase
     {
         return array(
             array(false,    '<?php echo stdClass::class;'),
-            array(false,    sprintf('<?php echo namespace %s; class MyClass { public function bar() { echo %s::class; } }', __NAMESPACE__, substr(__CLASS__, strlen(__NAMESPACE__) + 1))),
+            array(false,    sprintf('<?php echo namespace %s; class MyClass { public function bar() { echo %s::class; } }', __NAMESPACE__, mb_substr(__CLASS__, mb_strlen(__NAMESPACE__) + 1))),
             array(false,    sprintf('<?php echo namespace %s; class MyClass { public function bar() { echo self::class; } }', __NAMESPACE__)),
             array(false,    sprintf('<?php echo namespace %s; use stdClass; class MyClass { public function bar() { echo stdClass::class; } }', __NAMESPACE__)),
             array(false,    sprintf('<?php echo namespace %s; use stdClass as MyAlias; class MyClass { public function bar() { echo MyAlias::class; } }', __NAMESPACE__)),
