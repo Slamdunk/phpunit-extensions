@@ -87,20 +87,20 @@ final class ClassStandardsTraitTest extends TestCase
     public function checkClassKeywordUsageDataProvider()
     {
         return array(
-            array(false,    "<?php echo 'NonExistentClass';"),
             array(false,    '<?php echo "NonExistentClass";'),
-            array(false,    "<?php echo '';"),
-            array(false,    "<?php echo 'directory';"),
-            array(false,    "<?php echo 'datetime';"),
-            array(false,    "<?php namespace MyNamespace; echo 'MyNamespace\NonExistentClass';"),
+            array(false,    "<?php echo 'NonExistentClass';"),
+            array(false,    '<?php echo "";'),
+            array(false,    '<?php echo "directory";'),
+            array(false,    '<?php echo "datetime";'),
+            array(false,    '<?php namespace MyNamespace; echo "MyNamespace\NonExistentClass";'),
 
-            array(true,     "<?php echo 'stdClass';"),
             array(true,     '<?php echo "stdClass";'),
-            array(true,     sprintf("<?php echo '%s';", __CLASS__)),
-            array(true,     sprintf("<?php echo '%s';", strtolower(__CLASS__))),
-            array(true,     "<?php echo 'Directory';"),
-            array(true,     "<?php echo 'DateTime';"),
-            array(true,     "<?php namespace MyNamespace; echo 'DateTime';"),
+            array(true,     "<?php echo 'stdClass';"),
+            array(true,     sprintf('<?php echo "%s";', __CLASS__)),
+            array(true,     sprintf('<?php echo "%s";', strtolower(__CLASS__))),
+            array(true,     '<?php echo "Directory";'),
+            array(true,     '<?php echo "DateTime";'),
+            array(true,     '<?php namespace MyNamespace; echo "DateTime";'),
         );
     }
 }
