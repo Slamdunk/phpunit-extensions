@@ -2,23 +2,26 @@ language: php
 
 sudo: false
 
+env:
+    global:
+        - PHP_LATEST_VERSION=0
+
+matrix:
+    fast_finish: true
+    include:
+        - php: 7.0
+        - php: 7.1
+          env: PHP_LATEST_VERSION=1
+
 cache:
   directories:
     - $HOME/.composer
-
-php:
-  - 7.0
-  - 7.1
 
 install:
   - composer install --prefer-dist
 
 script:
-  - if [ ${TRAVIS_PHP_VERSION} = "7.1" ]; then vendor/bin/phpunit --coverage-clover ./clover.xml; else vendor/bin/phpunit; fi
-  - if [ ${TRAVIS_PHP_VERSION} = "7.1" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-  - if [ ${TRAVIS_PHP_VERSION} = "7.1" ]; then php ocular.phar code-coverage:upload --format=php-clover ./clover.xml; fi
-  - phpenv config-rm xdebug.ini || return 0
-  - vendor/bin/php-cs-fixer --diff --dry-run --verbose fix
+  - sh .travis.run-tests.sh
 
 notifications:
   email: false
