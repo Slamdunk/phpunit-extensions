@@ -38,7 +38,7 @@ trait ClassStandardsTrait
             $this->checkIndirectVariable($tokens, $relativePath);
             $this->checkClassKeywordUsage($tokens, $relativePath);
             foreach ($externalChecks as $externalCheck) {
-                $this->assertTrue(is_callable($externalCheck), 'Only callable accepcted as external checks');
+                $this->assertInternalType('callable', $externalCheck, 'Only callable accepcted as external checks');
                 $externalCheck($tokens, $relativePath);
             }
 
@@ -65,11 +65,7 @@ trait ClassStandardsTrait
             // The name mismatches, don't try to __autoload
             // more than once
             class_exists($className, true);
-            $this->assertTrue(
-                    class_exists($className, false)
-                or  interface_exists($className, false)
-                or  trait_exists($className, false)
-            , $className);
+            $this->assertTrue(class_exists($className, false) or interface_exists($className, false) or trait_exists($className, false), $className);
 
             $refClass = new ReflectionClass($className);
 
