@@ -14,7 +14,10 @@ install:
   - composer install --prefer-dist
 
 script:
-  - vendor/bin/phpunit --coverage-text
+  - if [ ${TRAVIS_PHP_VERSION} = "7.1" ]; then vendor/bin/phpunit --coverage-clover ./clover.xml; else vendor/bin/phpunit; fi
+  - if [ ${TRAVIS_PHP_VERSION} = "7.1" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
+  - if [ ${TRAVIS_PHP_VERSION} = "7.1" ]; then php ocular.phar code-coverage:upload --format=php-clover ./clover.xml; fi
+  - phpenv config-rm xdebug.ini || return 0
   - vendor/bin/php-cs-fixer --diff --dry-run --verbose fix
 
 notifications:
