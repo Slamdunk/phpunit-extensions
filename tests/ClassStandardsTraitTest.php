@@ -103,4 +103,58 @@ final class ClassStandardsTraitTest extends TestCase
             array(true,     '<?php namespace MyNamespace; echo "DateTime";'),
         );
     }
+
+    /**
+     * @dataProvider doTestClassStandardsDataProvider
+     */
+    public function testDoTestClassStandards(bool $shouldFail, string $directory, string $namespace = null)
+    {
+        if ($shouldFail) {
+            $this->expectException(AssertionFailedError::class);
+        }
+
+        $this->assertNull($this->doTestClassStandards($directory, $namespace));
+    }
+
+    public function doTestClassStandardsDataProvider()
+    {
+        return array(
+            array(false,    __DIR__ . '/TestAsset/NonPhpFiles'),
+            array(false,    __DIR__ . '/TestAsset/NoNamespace'),
+            array(false,    __DIR__ . '/TestAsset/ValidInterface',      'Slam\\PHPUnit\\Tests\\TestAsset\\ValidInterface\\'),
+            array(false,    __DIR__ . '/TestAsset/ValidTrait',          'Slam\\PHPUnit\\Tests\\TestAsset\\ValidTrait\\'),
+
+            array(true,     __DIR__ . '/TestAsset/NotAClass'),
+            array(true,     __DIR__ . '/TestAsset/ValidInterface',      'UnfinishedNamespace'),
+            array(true,     __DIR__ . '/TestAsset/LowercaseCapital',    'Slam\\PHPUnit\\Tests\\TestAsset\\LowercaseCapital\\'),
+            array(true,     __DIR__ . '/TestAsset/NonExistentClass',    'Slam\\PHPUnit\\Tests\\TestAsset\\NonExistentClass\\'),
+            array(true,     __DIR__ . '/TestAsset/NameMismatch',        'Slam\\PHPUnit\\Tests\\TestAsset\\NameMismatch\\'),
+            array(true,     __DIR__ . '/TestAsset/MalformedInterface',  'Slam\\PHPUnit\\Tests\\TestAsset\\MalformedInterface\\'),
+            array(true,     __DIR__ . '/TestAsset/MalformedTrait',      'Slam\\PHPUnit\\Tests\\TestAsset\\MalformedTrait\\'),
+            array(true,     __DIR__ . '/TestAsset/MalformedAbstract',   'Slam\\PHPUnit\\Tests\\TestAsset\\MalformedAbstract\\'),
+            array(true,     __DIR__ . '/TestAsset/MalformedException',  'Slam\\PHPUnit\\Tests\\TestAsset\\MalformedException\\'),
+        );
+    }
+
+    public function testDoTestClassStandardsAcceptCustomChecks()
+    {
+        $this->doTestClassStandards(__DIR__ . '/TestAsset/NoNamespace', null);
+
+        $this->expectException(AssertionFailedError::class);
+
+        $this->doTestClassStandards(__DIR__ . '/TestAsset/NoNamespace', null, array(
+            function (array & $tokens, string $filePath) {
+                $this->assertFalse(true);
+            },
+        ));
+    }
+
+    public function testDoTestClassStandardsAcceptCallableOnlyAsCustomChecks()
+    {
+        $this->expectException(AssertionFailedError::class);
+
+        $this->doTestClassStandards(__DIR__ . '/TestAsset/NoNamespace', null, array(
+            'not a function',
+        ));
+    }
 }

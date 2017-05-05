@@ -4,10 +4,97 @@ declare(strict_types=1);
 
 namespace Slam\PHPUnit;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use ReflectionClass;
 
 trait ClassStandardsTrait
 {
+    private function doTestClassStandards(string $directory, string $namespace = null, array $externalChecks = array())
+    {
+        if ($namespace !== null) {
+            $this->assertRegExp('/\\\\/', $namespace);
+        }
+
+        static $allowedExtensions = array(
+            'php' => true,
+            'phtml' => true,
+        );
+
+        $rdi = new RecursiveDirectoryIterator($directory);
+        $rii = new RecursiveIteratorIterator($rdi);
+
+        foreach ($rii as $file) {
+            if (! $file->isFile() or ! isset($allowedExtensions[$file->getExtension()])) {
+                continue;
+            }
+
+            $path = $file->getRealPath();
+
+            $tokens = token_get_all(file_get_contents($path));
+            $relativePath = defined('ROOT_PATH') ? str_replace(ROOT_PATH, '', $path) : $path;
+
+            $this->checkClassExistance($tokens, $relativePath);
+            $this->checkIndirectVariable($tokens, $relativePath);
+            $this->checkClassKeywordUsage($tokens, $relativePath);
+            foreach ($externalChecks as $externalCheck) {
+                $this->assertTrue(is_callable($externalCheck), 'Only callable accepcted as external checks');
+                $externalCheck($tokens, $relativePath);
+            }
+
+            if ($namespace === null) {
+                continue;
+            }
+
+            $className = mb_substr(str_replace($directory, '', $path), 1);
+            $className = str_replace('.php', '', $className);
+            $classNamespace = dirname($className);
+            $classNamespace = str_replace(DIRECTORY_SEPARATOR, '\\', $classNamespace);
+            $className = str_replace(DIRECTORY_SEPARATOR, '\\', $className);
+
+            $classNamespace = $namespace . $classNamespace;
+            $className = $namespace . $className;
+
+            $expectedClassName = explode('\\', $className);
+            $expectedClassName = array_map('ucfirst', $expectedClassName);
+            $expectedClassName = implode('\\', $expectedClassName);
+
+            $this->assertSame($expectedClassName, $className, 'The class and its parent directories must have first letter in uppercase');
+
+            // If class/interface/trait doesn't exist or
+            // The name mismatches, don't try to __autoload
+            // more than once
+            class_exists($className, true);
+            $this->assertTrue(
+                    class_exists($className, false)
+                or  interface_exists($className, false)
+                or  trait_exists($className, false)
+            , $className);
+
+            $refClass = new ReflectionClass($className);
+
+            $this->assertSame($className, $refClass->getName(), 'Class name must exactly match directory/file name');
+
+            if ($refClass->isInterface()) {
+                $this->assertRegExp('/Interface$/', $className, 'Interfaces must end with "Interface"');
+                continue;
+            }
+
+            if ($refClass->isTrait()) {
+                $this->assertRegExp('/Trait$/', $className, 'Traits must end with "Trait"');
+                continue;
+            }
+
+            if ($refClass->isAbstract()) {
+                $this->assertRegExp('/\\\\Abstract[^\\\\]+$/', $className, 'Abstract classes must start with "Abstract"');
+            }
+
+            if ($refClass->isSubclassOf(\Exception::class)) {
+                $this->assertRegExp('/Exception$/', $className, 'Exceptions must end with "Exception"');
+            }
+        }
+    }
+
     private function checkClassExistance(array & $tokens, string $filePath)
     {
         $namespaceOpened = false;
