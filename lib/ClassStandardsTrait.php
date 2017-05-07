@@ -21,7 +21,8 @@ trait ClassStandardsTrait
             'phtml' => true,
         );
 
-        $rdi = new RecursiveDirectoryIterator($directory);
+        $osDirectory = str_replace('/', DIRECTORY_SEPARATOR, $directory);
+        $rdi = new RecursiveDirectoryIterator($osDirectory);
         $rii = new RecursiveIteratorIterator($rdi);
 
         foreach ($rii as $file) {
@@ -46,7 +47,7 @@ trait ClassStandardsTrait
                 continue;
             }
 
-            $className = mb_substr(str_replace($directory, '', $path), 1);
+            $className = mb_substr(str_replace($osDirectory, '', $path), 1);
             $className = str_replace('.php', '', $className);
             $classNamespace = dirname($className);
             $classNamespace = str_replace(DIRECTORY_SEPARATOR, '\\', $classNamespace);
