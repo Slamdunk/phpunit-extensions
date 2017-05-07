@@ -49,11 +49,7 @@ trait ClassStandardsTrait
 
             $className = mb_substr(str_replace($osDirectory, '', $path), 1);
             $className = str_replace('.php', '', $className);
-            $classNamespace = dirname($className);
-            $classNamespace = str_replace(DIRECTORY_SEPARATOR, '\\', $classNamespace);
             $className = str_replace(DIRECTORY_SEPARATOR, '\\', $className);
-
-            $classNamespace = $namespace . $classNamespace;
             $className = $namespace . $className;
 
             $expectedClassName = explode('\\', $className);
