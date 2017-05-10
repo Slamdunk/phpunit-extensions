@@ -54,11 +54,13 @@ trait ClassStandardsTrait
             $className = str_replace(DIRECTORY_SEPARATOR, $namespaceSeparator, $className);
             $className = $namespace . $className;
 
-            $expectedClassName = explode($namespaceSeparator, $className);
-            $expectedClassName = array_map('ucfirst', $expectedClassName);
-            $expectedClassName = implode($namespaceSeparator, $expectedClassName);
+            if ($this->shouldClassesHaveUppercaseCapital()) {
+                $expectedClassName = explode($namespaceSeparator, $className);
+                $expectedClassName = array_map('ucfirst', $expectedClassName);
+                $expectedClassName = implode($namespaceSeparator, $expectedClassName);
 
-            $this->assertSame($expectedClassName, $className, 'The class and its parent directories must have first letter in uppercase');
+                $this->assertSame($expectedClassName, $className, 'The class and its parent directories must have first letter in uppercase');
+            }
 
             // If class/interface/trait doesn't exist or
             // The name mismatches, don't try to __autoload
@@ -67,7 +69,10 @@ trait ClassStandardsTrait
             class_exists($className, true);
             $classOutput = ob_get_clean();
 
-            $this->assertTrue(class_exists($className, false) or interface_exists($className, false) or trait_exists($className, false), $className);
+            $this->assertTrue(
+                class_exists($className, false) or interface_exists($className, false) or trait_exists($className, false),
+                sprintf('The class "%s" doesn\'t exist', $className)
+            );
 
             $this->assertEmpty($classOutput, sprintf('A file associated to the class "%s" produces unexpected output', $className));
 
@@ -96,6 +101,11 @@ trait ClassStandardsTrait
                 $this->assertRegExp('/Exception$/', $className, 'Exceptions must end with "Exception"');
             }
         }
+    }
+
+    private function shouldClassesHaveUppercaseCapital(): bool
+    {
+        return true;
     }
 
     private function checkClassExistance(array & $tokens, string $filePath)
