@@ -25,6 +25,7 @@
     "autoload-dev": {
         "psr-4": {
             "Slam\\PHPUnit\\Tests\\": "tests/"
-        }
+        },
+        "classmap": ["tests/TestAsset/ValidPsr0/"]
     }
 }

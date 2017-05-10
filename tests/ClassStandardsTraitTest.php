@@ -121,6 +121,7 @@ final class ClassStandardsTraitTest extends TestCase
         return array(
             array(false,    __DIR__ . '/TestAsset/NonPhpFiles'),
             array(false,    __DIR__ . '/TestAsset/NoNamespace'),
+            array(false,    __DIR__ . '/TestAsset/ValidPsr0',           'Slam_PHPUnit_Tests_TestAsset_ValidPsr0_'),
             array(false,    __DIR__ . '/TestAsset/ValidInterface',      'Slam\\PHPUnit\\Tests\\TestAsset\\ValidInterface\\'),
             array(false,    __DIR__ . '/TestAsset/ValidTrait',          'Slam\\PHPUnit\\Tests\\TestAsset\\ValidTrait\\'),
 
@@ -133,6 +134,7 @@ final class ClassStandardsTraitTest extends TestCase
             array(true,     __DIR__ . '/TestAsset/MalformedTrait',      'Slam\\PHPUnit\\Tests\\TestAsset\\MalformedTrait\\'),
             array(true,     __DIR__ . '/TestAsset/MalformedAbstract',   'Slam\\PHPUnit\\Tests\\TestAsset\\MalformedAbstract\\'),
             array(true,     __DIR__ . '/TestAsset/MalformedException',  'Slam\\PHPUnit\\Tests\\TestAsset\\MalformedException\\'),
+            array(true,     __DIR__ . '/TestAsset/SourceWithOutput',    'Slam\\PHPUnit\\Tests\\TestAsset\\SourceWithOutput\\'),
         );
     }
 

@@ -12,8 +12,10 @@ trait ClassStandardsTrait
 {
     private function doTestClassStandards(string $directory, string $namespace = null, array $externalChecks = array())
     {
+        $namespaceSeparator = null;
         if ($namespace !== null) {
-            $this->assertRegExp('/\\\\/', $namespace);
+            $namespaceSeparator = mb_substr($namespace, -1);
+            $this->assertContains($namespaceSeparator, array('\\', '_'), 'The namespace must end with a valid separator like "\\" or "_"');
         }
 
         static $allowedExtensions = array(
@@ -49,20 +51,25 @@ trait ClassStandardsTrait
 
             $className = mb_substr(str_replace($osDirectory, '', $path), 1);
             $className = str_replace('.php', '', $className);
-            $className = str_replace(DIRECTORY_SEPARATOR, '\\', $className);
+            $className = str_replace(DIRECTORY_SEPARATOR, $namespaceSeparator, $className);
             $className = $namespace . $className;
 
-            $expectedClassName = explode('\\', $className);
+            $expectedClassName = explode($namespaceSeparator, $className);
             $expectedClassName = array_map('ucfirst', $expectedClassName);
-            $expectedClassName = implode('\\', $expectedClassName);
+            $expectedClassName = implode($namespaceSeparator, $expectedClassName);
 
             $this->assertSame($expectedClassName, $className, 'The class and its parent directories must have first letter in uppercase');
 
             // If class/interface/trait doesn't exist or
             // The name mismatches, don't try to __autoload
             // more than once
+            ob_start();
             class_exists($className, true);
+            $classOutput = ob_get_clean();
+
             $this->assertTrue(class_exists($className, false) or interface_exists($className, false) or trait_exists($className, false), $className);
+
+            $this->assertEmpty($classOutput, sprintf('A file associated to the class "%s" produces unexpected output', $className));
 
             $refClass = new ReflectionClass($className);
 
@@ -79,7 +86,10 @@ trait ClassStandardsTrait
             }
 
             if ($refClass->isAbstract()) {
-                $this->assertRegExp('/\\\\Abstract[^\\\\]+$/', $className, 'Abstract classes must start with "Abstract"');
+                $regex = '/%ns%Abstract[^%ns%]+$/';
+                $regex = str_replace('%ns%', preg_quote($namespaceSeparator), $regex);
+
+                $this->assertRegExp($regex, $className, 'Abstract classes must start with "Abstract"');
             }
 
             if ($refClass->isSubclassOf(\Exception::class)) {

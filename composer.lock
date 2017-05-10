@@ -1795,20 +1795,20 @@
         },
         {
             "name": "slam/php-cs-fixer-extensions",
-            "version": "v1.0.0",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Slamdunk/php-cs-fixer-extensions.git",
-                "reference": "0c578bb749d0c19edb8a49c25d947fde03dc2ef1"
+                "reference": "911769efafa71f748b37aef7b061cdcf03b67554"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Slamdunk/php-cs-fixer-extensions/zipball/0c578bb749d0c19edb8a49c25d947fde03dc2ef1",
-                "reference": "0c578bb749d0c19edb8a49c25d947fde03dc2ef1",
+                "url": "https://api.github.com/repos/Slamdunk/php-cs-fixer-extensions/zipball/911769efafa71f748b37aef7b061cdcf03b67554",
+                "reference": "911769efafa71f748b37aef7b061cdcf03b67554",
                 "shasum": ""
             },
             "require": {
-                "friendsofphp/php-cs-fixer": "^2.2",
+                "friendsofphp/php-cs-fixer": "^2.3",
                 "php": "^7.0"
             },
             "require-dev": {
@@ -1834,7 +1834,7 @@
                 }
             ],
             "description": "Slam extension of friendsofphp/php-cs-fixer",
-            "time": "2017-04-03T12:05:36+00:00"
+            "time": "2017-04-26T13:44:41+00:00"
         },
         {
             "name": "slam/php-debug-r",
