@@ -82,11 +82,13 @@ trait ClassStandardsTrait
 
             if ($refClass->isInterface()) {
                 $this->assertRegExp('/Interface$/', $className, 'Interfaces must end with "Interface"');
+
                 continue;
             }
 
             if ($refClass->isTrait()) {
                 $this->assertRegExp('/Trait$/', $className, 'Traits must end with "Trait"');
+
                 continue;
             }
 
@@ -131,15 +133,18 @@ trait ClassStandardsTrait
                     if (! is_array($token) and $token === ';') {
                         $namespaceOpened = false;
                         $namespace = preg_replace('/\s+/', '', $namespace);
+
                         continue;
                     }
                     $namespace .= is_array($token) ? $token[1] : $token;
+
                     continue;
                 }
 
                 if (is_array($token) and $token[0] === T_NAMESPACE) {
                     $namespaceOpened = true;
                     $namespace = '';
+
                     continue;
                 }
 
@@ -155,6 +160,7 @@ trait ClassStandardsTrait
                         list($fullQualifiedAlis, $alias) = explode($aliasPlaceholder, $use);
                         $uses[$alias] = $fullQualifiedAlis;
                         $use = null;
+
                         continue;
                     }
                     $temp = is_array($token) ? $token[1] : $token;
@@ -162,17 +168,20 @@ trait ClassStandardsTrait
                         $temp = $aliasPlaceholder;
                     }
                     $use .= $temp;
+
                     continue;
                 }
 
                 if (is_array($token) and $token[0] === T_USE) {
                     $use = '';
+
                     continue;
                 }
 
                 // Class opened, namespace and use gathering not needed anymore
                 if (is_array($token) and $token[0] === T_CLASS) {
                     $classOpened = true;
+
                     continue;
                 }
             }
