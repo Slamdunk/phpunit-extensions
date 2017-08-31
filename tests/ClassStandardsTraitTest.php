@@ -27,7 +27,7 @@ final class ClassStandardsTraitTest extends TestCase
         $this->assertNull($this->checkClassExistance($tokens, $path), $code);
     }
 
-    public function checkClassExistanceDataProvider()
+    public function checkClassExistanceDataProvider(): array
     {
         return array(
             array(false,    '<?php echo stdClass::class;'),
@@ -58,7 +58,7 @@ final class ClassStandardsTraitTest extends TestCase
         $this->assertNull($this->checkIndirectVariable($tokens, $path), $code);
     }
 
-    public function checkIndirectVariableDataProvider()
+    public function checkIndirectVariableDataProvider(): array
     {
         return array(
             array(false,    '<?php echo $var;'),
@@ -84,7 +84,7 @@ final class ClassStandardsTraitTest extends TestCase
         $this->assertNull($this->checkClassKeywordUsage($tokens, $path), $code);
     }
 
-    public function checkClassKeywordUsageDataProvider()
+    public function checkClassKeywordUsageDataProvider(): array
     {
         return array(
             array(false,    '<?php echo "NonExistentClass";'),
@@ -105,6 +105,30 @@ final class ClassStandardsTraitTest extends TestCase
     }
 
     /**
+     * @dataProvider checkGotoDataProvider
+     */
+    public function testCheckGoto(bool $shouldFail, string $code)
+    {
+        $tokens = token_get_all($code);
+        $path = uniqid('./file_');
+
+        if ($shouldFail) {
+            $this->expectException(AssertionFailedError::class);
+        }
+
+        $this->assertNull($this->checkGoto($tokens, $path), $code);
+    }
+
+    public function checkGotoDataProvider(): array
+    {
+        return array(
+            array(false,    '<?php $goto = 1;'),
+
+            array(true,     '<?php goto test;'),
+        );
+    }
+
+    /**
      * @dataProvider doTestClassStandardsDataProvider
      */
     public function testDoTestClassStandards(bool $shouldFail, string $directory, string $namespace = null)
@@ -116,7 +140,7 @@ final class ClassStandardsTraitTest extends TestCase
         $this->assertNull($this->doTestClassStandards($directory, $namespace));
     }
 
-    public function doTestClassStandardsDataProvider()
+    public function doTestClassStandardsDataProvider(): array
     {
         return array(
             array(false,    __DIR__ . '/TestAsset/NonPhpFiles'),

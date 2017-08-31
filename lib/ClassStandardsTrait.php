@@ -287,4 +287,18 @@ trait ClassStandardsTrait
             );
         }
     }
+
+    private function checkGoto(array & $tokens, string $filePath)
+    {
+        foreach ($tokens as $index => $token) {
+            if (! is_array($token) or $token[0] !== T_GOTO) {
+                continue;
+            }
+
+            $this->fail(sprintf('No goto, cmon!%s.%s:%s',
+                PHP_EOL,
+                $filePath, $token[2])
+            );
+        }
+    }
 }
