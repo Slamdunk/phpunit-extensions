@@ -37,8 +37,8 @@ trait ClassStandardsTrait
             $tokens = token_get_all(file_get_contents($path));
             $relativePath = defined('ROOT_PATH') ? str_replace(ROOT_PATH, '', $path) : $path;
 
+            $this->checkGoto($tokens, $relativePath);
             $this->checkClassExistance($tokens, $relativePath);
-            $this->checkIndirectVariable($tokens, $relativePath);
             $this->checkClassKeywordUsage($tokens, $relativePath);
             foreach ($externalChecks as $externalCheck) {
                 $this->assertInternalType('callable', $externalCheck, 'Only callable accepcted as external checks');
@@ -219,22 +219,6 @@ trait ClassStandardsTrait
                 $classParts[] = $token[1];
             } else {
                 $classParts = array();
-            }
-        }
-    }
-
-    private function checkIndirectVariable(array & $tokens, string $filePath)
-    {
-        foreach ($tokens as $index => $token) {
-            if ((is_array($token) and T_OBJECT_OPERATOR === $token[0]) or '$' === $token) {
-                $nextIndex = 1 + $index;
-                if (is_array($tokens[$nextIndex]) and $tokens[$nextIndex][0] === T_WHITESPACE) {
-                    ++$nextIndex;
-                }
-                $nextToken = $tokens[$nextIndex];
-                if (is_array($nextToken) and T_VARIABLE === $nextToken[0]) {
-                    $this->fail(sprintf('Indirect variables must be enclosed in curly braces in file:%s.%s:%s', PHP_EOL, $filePath, $nextToken[2]));
-                }
             }
         }
     }

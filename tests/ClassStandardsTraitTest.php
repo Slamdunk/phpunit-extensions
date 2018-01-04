@@ -44,32 +44,6 @@ final class ClassStandardsTraitTest extends TestCase
     }
 
     /**
-     * @dataProvider checkIndirectVariableDataProvider
-     */
-    public function testCheckIndirectVariable(bool $shouldFail, string $code)
-    {
-        $tokens = token_get_all($code);
-        $path = uniqid('./file_');
-
-        if ($shouldFail) {
-            $this->expectException(AssertionFailedError::class);
-        }
-
-        $this->assertNull($this->checkIndirectVariable($tokens, $path), $code);
-    }
-
-    public function checkIndirectVariableDataProvider(): array
-    {
-        return array(
-            array(false,    '<?php echo $var;'),
-            array(false,    '<?php echo $ var;'),
-            array(false,    '<?php echo ${$var};'),
-
-            array(true,     '<?php echo $$var;'),
-        );
-    }
-
-    /**
      * @dataProvider checkClassKeywordUsageDataProvider
      */
     public function testCheckClassKeywordUsage(bool $shouldFail, string $code)
