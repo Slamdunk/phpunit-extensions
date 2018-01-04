@@ -50,7 +50,6 @@ class ClassStandardsTest extends TestCase
 
 1. Classes must be referred with `::class` keyword instead of strings
 1. `MyClass::class` aliases must refer to real classes
-1. `$$var` indirect variable must be explicit, i.e. `${$var}`
 1. No `goto` allowed
 1. No output must be produced during class daclaration
 1. Interfaces must end with "Interface"
