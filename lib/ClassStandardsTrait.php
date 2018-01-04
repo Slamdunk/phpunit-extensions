@@ -13,7 +13,7 @@ trait ClassStandardsTrait
     private function doTestClassStandards(string $directory, string $namespace = null, array $externalChecks = array())
     {
         $namespaceSeparator = null;
-        if ($namespace !== null) {
+        if (null !== $namespace) {
             $namespaceSeparator = mb_substr($namespace, -1);
             $this->assertContains($namespaceSeparator, array('\\', '_'), 'The namespace must end with a valid separator like "\\" or "_"');
         }
@@ -45,7 +45,7 @@ trait ClassStandardsTrait
                 $externalCheck($tokens, $relativePath);
             }
 
-            if ($namespace === null) {
+            if (null === $namespace) {
                 continue;
             }
 
@@ -129,8 +129,8 @@ trait ClassStandardsTrait
         foreach ($tokens as $index => $token) {
             if (! $classOpened) {
                 // Namespace gathering
-                if ($namespaceOpened === true) {
-                    if (! is_array($token) and $token === ';') {
+                if (true === $namespaceOpened) {
+                    if (! is_array($token) and ';' === $token) {
                         $namespaceOpened = false;
                         $namespace = preg_replace('/\s+/', '', $namespace);
 
@@ -141,7 +141,7 @@ trait ClassStandardsTrait
                     continue;
                 }
 
-                if (is_array($token) and $token[0] === T_NAMESPACE) {
+                if (is_array($token) and T_NAMESPACE === $token[0]) {
                     $namespaceOpened = true;
                     $namespace = '';
 
@@ -150,9 +150,9 @@ trait ClassStandardsTrait
 
                 // Uses gathering
                 if (is_string($use)) {
-                    if (! is_array($token) and $token === ';') {
+                    if (! is_array($token) and ';' === $token) {
                         $use = preg_replace('/\s+/', '', $use);
-                        if (mb_strpos($use, $aliasPlaceholder) === false) {
+                        if (false === mb_strpos($use, $aliasPlaceholder)) {
                             $parts = explode('\\', $use);
                             $use .= $aliasPlaceholder;
                             $use .= array_pop($parts);
@@ -164,7 +164,7 @@ trait ClassStandardsTrait
                         continue;
                     }
                     $temp = is_array($token) ? $token[1] : $token;
-                    if (is_array($token) and $token[0] === T_AS) {
+                    if (is_array($token) and T_AS === $token[0]) {
                         $temp = $aliasPlaceholder;
                     }
                     $use .= $temp;
@@ -172,39 +172,39 @@ trait ClassStandardsTrait
                     continue;
                 }
 
-                if (is_array($token) and $token[0] === T_USE) {
+                if (is_array($token) and T_USE === $token[0]) {
                     $use = '';
 
                     continue;
                 }
 
                 // Class opened, namespace and use gathering not needed anymore
-                if (is_array($token) and $token[0] === T_CLASS) {
+                if (is_array($token) and T_CLASS === $token[0]) {
                     $classOpened = true;
 
                     continue;
                 }
             }
 
-            if (is_array($token) and $token[0] === T_DOUBLE_COLON) {
+            if (is_array($token) and T_DOUBLE_COLON === $token[0]) {
                 $nextIndex = 1 + $index;
                 if (is_array($tokens[$nextIndex]) and $tokens[$nextIndex][0] === T_WHITESPACE) {
                     ++$nextIndex;
                 }
                 $nextToken = $tokens[$nextIndex];
-                if (! is_array($nextToken) or $nextToken[0] !== T_CLASS) {
+                if (! is_array($nextToken) or T_CLASS !== $nextToken[0]) {
                     continue;
                 }
 
                 $alias = reset($classParts);
-                if ($alias === 'self') {
+                if ('self' === $alias) {
                     continue;
                 }
 
                 if (isset($uses[$alias])) {
                     array_shift($classParts);
                     array_unshift($classParts, $uses[$alias]);
-                } elseif ($alias !== '\\' and $namespace !== null) {
+                } elseif ('\\' !== $alias and null !== $namespace) {
                     array_unshift($classParts, '\\');
                     array_unshift($classParts, $namespace);
                 }
@@ -226,13 +226,13 @@ trait ClassStandardsTrait
     private function checkIndirectVariable(array & $tokens, string $filePath)
     {
         foreach ($tokens as $index => $token) {
-            if ((is_array($token) and $token[0] === T_OBJECT_OPERATOR) or $token === '$') {
+            if ((is_array($token) and T_OBJECT_OPERATOR === $token[0]) or '$' === $token) {
                 $nextIndex = 1 + $index;
                 if (is_array($tokens[$nextIndex]) and $tokens[$nextIndex][0] === T_WHITESPACE) {
                     ++$nextIndex;
                 }
                 $nextToken = $tokens[$nextIndex];
-                if (is_array($nextToken) and $nextToken[0] === T_VARIABLE) {
+                if (is_array($nextToken) and T_VARIABLE === $nextToken[0]) {
                     $this->fail(sprintf('Indirect variables must be enclosed in curly braces in file:%s.%s:%s', PHP_EOL, $filePath, $nextToken[2]));
                 }
             }
@@ -244,13 +244,13 @@ trait ClassStandardsTrait
         $isNamespaced = false;
 
         foreach ($tokens as $index => $token) {
-            if (is_array($token) and $token[0] === T_NAMESPACE) {
+            if (is_array($token) and T_NAMESPACE === $token[0]) {
                 $isNamespaced = true;
 
                 continue;
             }
 
-            if (! is_array($token) or $token[0] !== T_CONSTANT_ENCAPSED_STRING) {
+            if (! is_array($token) or T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
                 continue;
             }
 
@@ -270,7 +270,7 @@ trait ClassStandardsTrait
 
             $use = $importedClass;
             $class = $importedClass;
-            if (mb_strpos($use, '\\') !== false) {
+            if (false !== mb_strpos($use, '\\')) {
                 $class = mb_substr(mb_strrchr($use, '\\'), 1);
             }
             if (! $isNamespaced) {
@@ -280,7 +280,7 @@ trait ClassStandardsTrait
 
             $this->fail(sprintf('Class "%s" must be written %s"%s::class" in file:%s.%s:%s',
                 $importedClass,
-                $use !== null ? sprintf('with a "use %s;" and then a ', $use) : '',
+                null !== $use ? sprintf('with a "use %s;" and then a ', $use) : '',
                 $class,
                 PHP_EOL,
                 $filePath, $token[2])
@@ -291,7 +291,7 @@ trait ClassStandardsTrait
     private function checkGoto(array & $tokens, string $filePath)
     {
         foreach ($tokens as $index => $token) {
-            if (! is_array($token) or $token[0] !== T_GOTO) {
+            if (! is_array($token) or T_GOTO !== $token[0]) {
                 continue;
             }
 
